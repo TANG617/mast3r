@@ -253,17 +253,17 @@ def main_demo(tmpdirname, model, device, image_size, server_name, server_port, s
                         matching_conf_thr = gradio.Slider(label="Matching Confidence Thr", value=5.,
                                                           minimum=0., maximum=30., step=0.1,
                                                           info="Before Fallback to Regr3D!")
-                        shared_intrinsics = gradio.Checkbox(value=False, label="Shared intrinsics",
+                        shared_intrinsics = gradio.Checkbox(value=True, label="Shared intrinsics",
                                                             info="Only optimize one set of intrinsics for all views")
                         scenegraph_type = gradio.Dropdown([("complete: all possible image pairs", "complete"),
                                                            ("swin: sliding window", "swin"),
                                                            ("logwin: sliding window with long range", "logwin"),
                                                            ("oneref: match one image with all", "oneref")],
-                                                          value='complete', label="Scenegraph",
+                                                          value='swin', label="Scenegraph",
                                                           info="Define how to make pairs",
                                                           interactive=True)
                         with gradio.Column(visible=False) as win_col:
-                            winsize = gradio.Slider(label="Scene Graph: Window Size", value=1,
+                            winsize = gradio.Slider(label="Scene Graph: Window Size", value=3,
                                                     minimum=1, maximum=1, step=1)
                             win_cyclic = gradio.Checkbox(value=False, label="Cyclic sequence")
                         refid = gradio.Slider(label="Scene Graph: Id", value=0,

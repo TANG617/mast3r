@@ -216,7 +216,9 @@ def sparse_scene_optimizer(imgs, subsample, imsizes, pps, base_focals, core_dept
         pp = nn.Parameter((weighting @ pps).to(dtype))
         pps = [pp for _ in range(len(imgs))]
         focal_m = weighting @ base_focals
-        log_focal = nn.Parameter(focal_m.view(1).log().to(dtype))
+        # log_focal = nn.Parameter(focal_m.view(1).log().to(dtype))
+        # log_focal = nn.Parameter(focal_m.view(1).log().to(dtype))
+        log_focal = nn.Parameter(torch.tensor([300.]).log().to(device=device,dtype=dtype), requires_grad=False)
         log_focals = [log_focal for _ in range(len(imgs))]
     else:
         pps = [nn.Parameter(pp.to(dtype)) for pp in pps]
@@ -230,7 +232,8 @@ def sparse_scene_optimizer(imgs, subsample, imsizes, pps, base_focals, core_dept
 
     def make_K_cam_depth(log_focals, pps, trans, quats, log_sizes, core_depth):
         # make intrinsics
-        focals = torch.cat(log_focals).exp().clip(min=min_focals, max=max_focals)
+        # focals = torch.cat(log_focals).exp().clip(min=min_focals, max=max_focals)
+        focals = torch.tensor([300.]).to(device=device,dtype=dtype)
         pps = torch.stack(pps)
         K = torch.eye(3, dtype=dtype, device=device)[None].expand(len(imgs), 3, 3).clone()
         K[:, 0, 0] = K[:, 1, 1] = focals
@@ -244,7 +247,8 @@ def sparse_scene_optimizer(imgs, subsample, imsizes, pps, base_focals, core_dept
 
         # compute distance of camera to focal plane
         # tan(fov) = W/2 / focal
-        z_cameras = sizes * median_depths * focals / base_focals
+        # z_cameras = sizes * median_depths * focals / base_focals
+        z_cameras = torch.full((len(imgs),), 100., device=device, dtype=dtype)
 
         # make extrinsic
         rel_cam2cam = torch.eye(4, dtype=dtype, device=device)[None].expand(len(imgs), 4, 4).clone()
